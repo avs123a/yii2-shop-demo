@@ -1,4 +1,15 @@
 Yii2 simple online shop example
+View demo
+adminpanel:
+http://shopdemo2.epizy.com/demoshop2/backend/web/index.php/site/login
+
+login : admin
+password : avs03021998
+
+site:
+http://shopdemo2.epizy.com/demoshop2/frontend/web/
+
+
 
 installing:
  - clone github repository;
