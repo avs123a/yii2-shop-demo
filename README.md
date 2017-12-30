@@ -26,6 +26,12 @@ installing:
  Notes:
   In some servers you may have an problem with modal window. So correct modal in dependence of server specifications.
   If you have this problem:
-  login link: your_domain/frontend/web/index.php/login
-  register link: your_domain/frontend/web/index.php/register
-  logout link: your_domain/demoshop2/frontend/web/
+  
+  login link: 
+  your_domain/frontend/web/index.php/login
+ 
+  register link: 
+  your_domain/frontend/web/index.php/register
+  
+  logout link: 
+  your_domain/demoshop2/frontend/web/
