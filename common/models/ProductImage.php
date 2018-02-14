@@ -4,6 +4,7 @@ namespace common\models;
 
 use Yii;
 use yii\web\UploadedFile;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "product_image".
@@ -16,6 +17,13 @@ use yii\web\UploadedFile;
  */
 class ProductImage extends \yii\db\ActiveRecord
 {
+	public function behaviors()
+    {
+        return [
+            TimestampBehavior::className(),
+        ];
+    }
+
     /**
      * @inheritdoc
      */
@@ -43,6 +51,8 @@ class ProductImage extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'product_id' => 'Product ID',
+			'created_at' => 'Created At',
+            'updated_at' => 'Updated At',
         ];
     }
 

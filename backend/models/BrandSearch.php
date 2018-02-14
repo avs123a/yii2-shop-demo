@@ -12,14 +12,16 @@ use common\models\Brand;
  */
 class BrandSearch extends Brand
 {
+	public $created_normal;
+	public $updated_normal;
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['id'], 'integer'],
-            [['title', 'descrition'], 'safe'],
+            [['id', 'created_at', 'updated_at'], 'integer'],
+            [['title', 'descrition', 'created_normal', 'updated_normal'], 'safe'],
         ];
     }
 
@@ -41,12 +43,15 @@ class BrandSearch extends Brand
      */
     public function search($params)
     {
-        $query = Brand::find()->asArray();
+        $query = Brand::find();
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
-            'query' => $query,
+            'query' => $query->asArray(),
+			'pagination' => [
+			    'pageSize' => 15,
+			]
         ]);
 
         $this->load($params);
@@ -63,6 +68,8 @@ class BrandSearch extends Brand
         ]);
 
         $query->andFilterWhere(['like', 'title', $this->title])
+		    ->andFilterWhere(['like', 'created_at', strtotime($this->created_normal)])
+			->andFilterWhere(['like', 'updated_at', strtotime($this->updated_normal)])
             ->andFilterWhere(['like', 'descrition', $this->descrition]);
 
         return $dataProvider;

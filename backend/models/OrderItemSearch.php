@@ -12,14 +12,16 @@ use common\models\OrderItem;
  */
 class OrderItemSearch extends OrderItem
 {
+	public $created_normal;
+	public $updated_normal;
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['id', 'order_id', 'product_id', 'quantity'], 'integer'],
-            [['color'], 'safe'],
+            [['id', 'order_id', 'product_id', 'quantity', 'created_at', 'updated_at'], 'integer'],
+            [['color', 'created_normal', 'updated_normal', 'price'], 'safe'],
         ];
     }
 
@@ -41,12 +43,15 @@ class OrderItemSearch extends OrderItem
      */
     public function search($params)
     {
-        $query = OrderItem::find()->joinWith('product')->asArray();
+        $query = OrderItem::find();
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
-            'query' => $query,
+            'query' => $query->asArray(),
+			'pagination' => [
+			    'pageSize' => 5,
+			]
         ]);
 
         $this->load($params);
@@ -62,10 +67,13 @@ class OrderItemSearch extends OrderItem
             'id' => $this->id,
             'order_id' => $this->order_id,
             'product_id' => $this->product_id,
+			'price' => $this->price,
             'quantity' => $this->quantity,
         ]);
 
-        $query->andFilterWhere(['like', 'color', $this->color]);
+        $query->andFilterWhere(['like', 'color', $this->color])
+		    ->andFilterWhere(['like', 'created_at', strtotime($this->created_normal)])
+			->andFilterWhere(['like', 'updated_at', strtotime($this->updated_normal)]);
 
         return $dataProvider;
     }

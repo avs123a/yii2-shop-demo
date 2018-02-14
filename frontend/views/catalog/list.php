@@ -50,7 +50,16 @@ $back_img = null;
 								  <?=Html::beginForm(['catalog/list'], 'get') ?>
 									<ul>
 									<?php foreach($categories as $category): ?>
-										<li><input type="submit" name="choosed_category" class="btn btn-link" value="<?=$category['title'] ?>"></li>
+									    <?php if($chld_categ = $category->getCategories()->asArray()->all()): ?>
+										    <li><?=$category->title ?></li>
+										    <?php foreach($chld_categ as $chldcategory): ?>
+											    <li><input type="submit" name="choosed_category" class="btn btn-link" value="<?=$chldcategory['title'] ?>"></li>
+											<?php endforeach; ?>
+										<?php else: ?>
+										  <?if(!$category->parent_id): ?>
+										    <li><input type="submit" name="choosed_category" class="btn btn-link" value="<?=$category->title ?>"></li>
+										  <?php endif; ?>
+										<?php endif; ?>
 									<?php endforeach; ?>
 									</ul>
 								  <?=Html::endForm(); ?>

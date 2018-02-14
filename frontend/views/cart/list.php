@@ -16,17 +16,17 @@ $this->title = 'Cart';
 			<div class="col-xs-2"></div>
 		</div>
 	 
-        <?php foreach($model as $key => $value): ?>
+        <?php foreach($products as $product): ?>
 	    <div class="row" style="min-height:100px;">
-		    <div class="col-xs-3"><?=$value['title'] ?></div>
-			<div class="col-xs-2"><?php if($value['id_item_cart']!=null) echo "$" ?><?=$value['price'] ?></div>
-			<div class="col-xs-2"><?=$value['color'] ?></div>
-			<div class="col-xs-3"><?php if($value['id_item_cart']!=null): ?><?php if($value['quantity']>1) echo Html::a(' <strong>-</strong> ',['cart/update-item','id'=>$value['id_item_cart'],'option1'=>'reduce'], ['class' => 'btn btn-default']); echo $value['quantity']; if($value['quantity']<$value['avquantity']) echo Html::a(' <strong>+</strong> ',['cart/update-item','id'=>$value['id_item_cart'],'option1'=>'add'], ['class' => 'btn btn-default']); ?> (<?=$value['avquantity'] ?> available) <?php endif; ?></div>
-			<div class="col-xs-2"><?php if($value['id_item_cart']!=null) echo Html::a('<button type="button" style="background-color:#ff0000;color:#ffffff">x</button>', ['cart/delete-item', 'item_id' => $value['id_item_cart']]) ?></div>
+		    <div class="col-xs-3"><?= $product->title ?></div>
+			<div class="col-xs-2"><?= "$".$product->getPrice() ?></div>
+			<div class="col-xs-2"><?=\Yii::$app->session->get('item_'.$product->getId()) ?></div>
+			<div class="col-xs-3"><?php if($product->getQuantity()>1) echo Html::a(' <strong>-</strong> ',['cart/update-item','id'=>$product->getId(),'quantity2'=>$product->getQuantity()-1], ['class' => 'btn btn-default']); echo $product->getQuantity(); if($product->getQuantity()<$product->quantity) echo Html::a(' <strong>+</strong> ',['cart/update-item','id'=>$product->getId(),'quantity2'=>$product->getQuantity()+1], ['class' => 'btn btn-default']); ?> (<?=$product->quantity ?> available)</div>
+			<div class="col-xs-2"><?= Html::a('<button type="button" style="background-color:#ff0000;color:#ffffff">x</button>', ['cart/delete-item', 'item_id' => $product->getId()]) ?></div>
 		</div>
         <?php endforeach; ?>
 		
-		
+		<strong>Total: $<?=$total ?></strong>
 		<?= Html::a('Order', ['cart/order'], ['class' => 'btn btn-default', 'style' => 'color:#cc0000']); ?>
 	</div>
 </div>

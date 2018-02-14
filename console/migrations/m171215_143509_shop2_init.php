@@ -18,7 +18,9 @@ class m171215_143509_shop2_init extends Migration
             'id' => Schema::TYPE_PK,
             'parent_id' => Schema::TYPE_INTEGER,
             'title' => Schema::TYPE_STRING . '(30) NOT NULL',
-            'descrition' => Schema::TYPE_STRING,
+            'descrition' => Schema::TYPE_TEXT,
+			'created_at' => Schema::TYPE_INTEGER,
+            'updated_at' => Schema::TYPE_INTEGER,
         ], $tableOptions);
 
         $this->addForeignKey('fk-category-parent_id-category-id', '{{%category}}', 'parent_id', '{{%category}}', 'id', 'CASCADE');
@@ -27,7 +29,9 @@ class m171215_143509_shop2_init extends Migration
 		$this->createTable('{{%brand}}', [
             'id' => Schema::TYPE_PK,
             'title' => Schema::TYPE_STRING . '(30) NOT NULL',
-            'descrition' => Schema::TYPE_STRING,
+            'descrition' => Schema::TYPE_TEXT,
+			'created_at' => Schema::TYPE_INTEGER,
+            'updated_at' => Schema::TYPE_INTEGER,
         ], $tableOptions);
 		
 		
@@ -40,6 +44,8 @@ class m171215_143509_shop2_init extends Migration
             'description' => Schema::TYPE_TEXT,
             'price' => Schema::TYPE_MONEY,
 			'quantity' => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
+			'created_at' => Schema::TYPE_INTEGER,
+            'updated_at' => Schema::TYPE_INTEGER,
         ], $tableOptions);
 
         $this->addForeignKey('fk-product-category_id-category_id', '{{%product}}', 'category_id', '{{%category}}', 'id', 'RESTRICT');
@@ -50,6 +56,8 @@ class m171215_143509_shop2_init extends Migration
 		 $this->createTable('{{%product_image}}', [
             'id' => Schema::TYPE_PK,
 			'product_id' => Schema::TYPE_INTEGER,
+			'created_at' => Schema::TYPE_INTEGER,
+            'updated_at' => Schema::TYPE_INTEGER,
         ], $tableOptions);
 		
 		$this->addForeignKey('fk-product_image-product_id-product-id', '{{%product_image}}', 'product_id', '{{%product}}', 'id', 'RESTRICT');
@@ -57,9 +65,9 @@ class m171215_143509_shop2_init extends Migration
 		//order table
         $this->createTable('{{%order}}', [
             'id' => Schema::TYPE_PK,
-            'created_at' => Schema::TYPE_DATE,
-            'updated_at' => Schema::TYPE_DATE,
-			'customer_type' => Schema::TYPE_STRING . '(6) NOT NULL DEFAULT "guest"',
+            'created_at' => Schema::TYPE_INTEGER,
+            'updated_at' => Schema::TYPE_INTEGER,
+			'customer_type' => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
 			'surname' => Schema::TYPE_STRING,
 			'name' => Schema::TYPE_STRING,
 			'country' => Schema::TYPE_STRING,
@@ -70,7 +78,7 @@ class m171215_143509_shop2_init extends Migration
             'phone' => Schema::TYPE_STRING,
             'email' => Schema::TYPE_STRING,
             'notes' => Schema::TYPE_TEXT,
-            'status' => Schema::TYPE_STRING,
+            'status' => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
         ], $tableOptions);
 
 		//order_item table
@@ -78,8 +86,11 @@ class m171215_143509_shop2_init extends Migration
             'id' => Schema::TYPE_PK,
             'order_id' => Schema::TYPE_INTEGER,
             'product_id' => Schema::TYPE_INTEGER,
+			'price' => Schema::TYPE_MONEY,
 			'color' => Schema::TYPE_STRING . '(16)',
             'quantity' => Schema::TYPE_INTEGER,
+			'created_at' => Schema::TYPE_INTEGER,
+            'updated_at' => Schema::TYPE_INTEGER,
         ], $tableOptions);
 		
 		$this->addForeignKey('fk-order_item-order_id-order-id', '{{%order_item}}', 'order_id', '{{%order}}', 'id', 'CASCADE');

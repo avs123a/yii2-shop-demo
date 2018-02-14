@@ -4,6 +4,8 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 use yii\widgets\ActiveForm;
 use yii\grid\GridView;
+use kartik\file\FileInput;
+use dosamigos\datepicker\DatePicker;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Product */
@@ -31,12 +33,32 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model1img,
         'attributes' => [
             'id',
-            'category_id',
-            'brand_id',
+			[
+			    'label' => 'Category',
+                'attribute' => 'category_id',
+			    'value' => function($model1img){
+					return \common\models\Category::findOne($model1img['category_id'])->title;
+				}
+			],
+            [
+			    'label' => 'Brand',
+                'attribute' => 'brand_id',
+			    'value' => function($model1img){
+					return \common\models\Brand::findOne($model1img['brand_id'])->title;
+				}
+			],
             'title',
             'description:ntext',
             'price',
             'quantity',
+			[
+			    'format' => ['date', 'dd.MM.Y'],
+                'attribute' => 'created_at',
+			],
+			[
+			    'format' => ['date', 'dd.MM.Y'],
+                'attribute' => 'updated_at',
+			]
         ],
     ]) ?>
 	
@@ -44,22 +66,51 @@ $this->params['breadcrumbs'][] = $this->title;
 	
 	<?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]) ?>
 	
-	<?= $form->field($uploadform, 'files')->fileInput(['multiple' => false]) ?>
-	
-	<?=Html::submitButton('Upload', ['class' => 'btn btn-info']) ?>
+	<?= $form->field($uploadform, 'files')->widget(FileInput::classname(), [
+    'options' => ['multiple' => false],
+    'pluginOptions' => ['previewFileType' => 'jpg']
+    ])->label('Product image')  ?>
 	
 	<?php ActiveForm::end(); ?>
 	<?php if($dataProviderImg): ?>
 	
 	<?= GridView::widget([
         'dataProvider' => $dataProviderImg,
+		'filterModel' => $searchModelImg,
+		'summary' => false,
         'columns' => [
             'id',
-			'product_id',
+			[
+			    'format' => ['date', 'dd.MM.Y'],
+				'attribute' => 'created_at',
+				'filter' => DatePicker::widget([
+                    'model' => $searchModelImg,
+                    'attribute' => 'created_normal',
+                    'template' => '{addon}{input}',
+                    'clientOptions' => [
+                        'autoclose' => true,
+                        'format' => 'yyyy-mm-dd',
+                    ],
+			    ]),
+            ],
+			[
+			    'format' => ['date', 'dd.MM.Y'],
+				'attribute' => 'updated_at',
+				'filter' => DatePicker::widget([
+                    'model' => $searchModelImg,
+                    'attribute' => 'updated_normal',
+                    'template' => '{addon}{input}',
+                    'clientOptions' => [
+                        'autoclose' => true,
+                        'format' => 'yyyy-mm-dd',
+                    ],
+			    ]),
+            ],
             [
+			    'label' => 'Image',
                 'format' => 'raw',
-                'value' => function($model, $key, $index, $column){
-                    return Html::img(\common\models\ProductImage::getProductImgUrl($model->id, $model->product_id));
+                'value' => function($model){
+                    return Html::img(\common\models\ProductImage::getProductImgUrl($model->id, $model->product_id), ['width' => 200, 'height' => 200]);
                 }
             ],
             [

@@ -69,7 +69,7 @@ class OrderController extends Controller
         $dataProviderItem = $searchModelItem->search(Yii::$app->request->queryParams);
 		
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model1' => $this->findModel($id),
 			'searchModelItem' => $searchModelItem,
 			'dataProviderItem' => $dataProviderItem,
         ]);

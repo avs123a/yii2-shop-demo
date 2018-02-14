@@ -12,13 +12,16 @@ use common\models\ProductImage;
  */
 class ProductImageSearch extends ProductImage
 {
+	public $created_normal;
+	public $updated_normal;
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['id', 'product_id'], 'integer'],
+            [['id', 'product_id', 'created_at', 'updated_at'], 'integer'],
+			[['created_normal', 'updated_normal'], 'safe'],
         ];
     }
 
@@ -46,6 +49,9 @@ class ProductImageSearch extends ProductImage
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+			'pagination' => [
+			    'pageSize' => 6,
+			]
         ]);
 
         $this->load($params);
@@ -61,6 +67,8 @@ class ProductImageSearch extends ProductImage
             'id' => $this->id,
             'product_id' => $this->product_id,
         ]);
+		$query->andFilterWhere(['like', 'created_at', strtotime($this->created_normal)])
+			->andFilterWhere(['like', 'updated_at', strtotime($this->updated_normal)]);
 
         return $dataProvider;
     }

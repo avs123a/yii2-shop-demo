@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use dosamigos\datepicker\DatePicker;
 
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\BrandSearch */
@@ -21,12 +22,37 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+		'summary' => false,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
             'id',
+			[
+			    'format' => ['date', 'dd.MM.Y'],
+				'attribute' => 'created_at',
+				'filter' => DatePicker::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'created_normal',
+                    'template' => '{addon}{input}',
+                    'clientOptions' => [
+                        'autoclose' => true,
+                        'format' => 'yyyy-mm-dd',
+                    ],
+			    ]),
+            ],
+			[
+			    'format' => ['date', 'dd.MM.Y'],
+				'attribute' => 'updated_at',
+				'filter' => DatePicker::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'updated_normal',
+                    'template' => '{addon}{input}',
+                    'clientOptions' => [
+                        'autoclose' => true,
+                        'format' => 'yyyy-mm-dd',
+                    ],
+			    ]),
+            ],
             'title',
-            'descrition',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

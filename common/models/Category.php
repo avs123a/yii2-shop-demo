@@ -4,7 +4,7 @@ namespace common\models;
 
 use Yii;
 use yii\web\UploadedFile;
-
+use yii\behaviors\TimestampBehavior;
 /**
  * This is the model class for table "category".
  *
@@ -20,6 +20,13 @@ use yii\web\UploadedFile;
  */
 class Category extends \yii\db\ActiveRecord
 {
+	public function behaviors()
+    {
+        return [
+            TimestampBehavior::className(),
+        ];
+    }
+
     /**
      * @inheritdoc
      */
@@ -51,7 +58,9 @@ class Category extends \yii\db\ActiveRecord
             'id' => 'ID',
             'parent_id' => 'Parent ID',
             'title' => 'Title',
-            'descrition' => 'Descrition',
+            'descrition' => 'Description',
+			'created_at' => 'Created At',
+            'updated_at' => 'Updated At',
         ];
     }
 

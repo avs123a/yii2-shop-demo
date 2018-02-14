@@ -14,22 +14,17 @@ class CartController extends Controller
 	//adding to cart
 	public function actionAdd($productId)
 	{
+		$session = Yii::$app->session;
 		$color = null;
 		$product = Product::findOne($productId);
-		$session = Yii::$app->session;
 		if($cl = Yii::$app->request->post('selected_color')){
 			$color = $cl;
 		}else{
 			$color = 'black';
 		}
-		$session["item_$productId"] = [
-		    'id_item_cart' => $productId,
-			'title' => $product->title,
-            'price' => $product->price,
-			'color' => $color,
-			'quantity' => 1,
-            'avquantity' => $product->quantity,	
-		];
+	    
+		$session->set("item_$productId", $color);
+		Yii::$app->cart->put($product, 1);
         
 		$session->addFlash('success', 'You added product to your cart');
 		return $this->redirect(['//catalog/list']);
@@ -39,25 +34,22 @@ class CartController extends Controller
 	//show cart
 	public function actionList()
 	{
-		$model = Yii::$app->session;
+		/* @var $cart ShoppingCart */
+        $cart = Yii::$app->cart;
 		
+        $products = $cart->getPositions();
+        $total = $cart->getCost();
+
 		return $this->render('list',[
-		    'model' => $model,
+		    'products' => $products,
+			'total' => $total,
 		]);
 	}
 	
-	public function actionUpdateItem($id, $option1)
+	public function actionUpdateItem($id, $quantity2)
 	{
-		$cart = Yii::$app->session;
-		$item = $cart["item_$id"];
-		switch($option1)
-		{
-			case 'add': ++$item['quantity'];
-			break;
-			case 'reduce': --$item['quantity'];
-			break;
-		}
-		$cart["item_$id"] = $item;
+		$product = Product::findOne($id);
+		Yii::$app->cart->update($product, $quantity2);
 		
 		return $this->redirect(['cart/list']);
 		
@@ -66,8 +58,9 @@ class CartController extends Controller
 	//delete item
 	public function actionDeleteItem($item_id)
 	{
-		$cart = Yii::$app->session;
-		$cart->remove("item_$item_id");
+		$product = Product::findOne($item_id);
+		Yii::$app->cart->remove($product);
+		Yii::$app->session->remove("item_$item_id");
 		
 		return $this->redirect(['cart/list']);
 	}
@@ -77,24 +70,28 @@ class CartController extends Controller
 	{
 		$model = new Order();
 		
-		$cart = Yii::$app->session;
-		
+		$cart = Yii::$app->cart;
+		$products = $cart->getPositions();
+        $total = $cart->getCost();
 		
 		if($model->load(Yii::$app->request->post()) && $model->save())
 		{
-			foreach($cart as $key => $value){
-				if($value['id_item_cart']!=null){
-				    $item = new OrderItem();
-				    $item->order_id = $model->id;
-				    $item->product_id = $value['id_item_cart'];
-					$item->color = $value['color'];
-				    $item->quantity = $value['quantity'];
+			foreach($products as $product){
+				$item = new OrderItem();
+				$item->order_id = $model->id;
+				$item->product_id = $product->getId();
+				$item->price = $product->getPrice();
+				$item->color = Yii::$app->session->get('item_'.$product->getId());
+				$item->quantity = $product->getQuantity();
 					
-					if($item->save()){
-						$cart->remove('item_'.$value['id_item_cart']);
-					}
+			    if($item->save()){
+					Yii::$app->session->remove('item_'.$product->getId());
+				}else{
+					Yii::$app->session-addFlash('error', 'Error. Contact us, please.');
 				}
 			}
+			$cart->removeAll();
+
 			Yii::$app->session->addFlash('success', 'Thanks for your order. We will contact to you.');
 			return $this->redirect(['//catalog/list']);
 			
@@ -103,9 +100,8 @@ class CartController extends Controller
 		{
 			return $this->render('order', [
 			    'model' => $model,
-			    'cart' => $cart,
-			
-			
+			    'products' => $products,
+				'total' => $total,
 			]);
 			
 		}

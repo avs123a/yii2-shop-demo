@@ -51,6 +51,10 @@ return [
 				'order' => 'cart/order',
             ],
         ],
+		'cart' => [
+            'class' => 'yz\shoppingcart\ShoppingCart',
+        ],
+
         
     ],
     'params' => $params,

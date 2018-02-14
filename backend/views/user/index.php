@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use dosamigos\datepicker\DatePicker;
 
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\UserSearch */
@@ -17,18 +18,48 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+		'summary' => false,
         'columns' => [
 
             'id',
-            'username',
-            'auth_key',
-            'password_hash',
-            'password_reset_token',
-            // 'email:email',
-            // 'role',
-            // 'status',
-            // 'created_at',
-            // 'updated_at',
+			[
+			    'format' => ['date', 'dd.MM.Y'],
+				'attribute' => 'created_at',
+				'filter' => DatePicker::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'created_normal',
+                    'template' => '{addon}{input}',
+                    'clientOptions' => [
+                        'autoclose' => true,
+                        'format' => 'yyyy-mm-dd',
+                    ],
+			    ]),
+            ],
+			[
+			    'format' => ['date', 'dd.MM.Y'],
+				'attribute' => 'updated_at',
+				'filter' => DatePicker::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'updated_normal',
+                    'template' => '{addon}{input}',
+                    'clientOptions' => [
+                        'autoclose' => true,
+                        'format' => 'yyyy-mm-dd',
+                    ],
+			    ]),
+            ],
+			'username',
+            'email:email',
+            [
+                'attribute' => 'status',
+				'filter' => array(\common\models\User::STATUS_ACTIVE => 'Active', \common\models\User::STATUS_DELETED => 'Banned'),
+				'value' => function($model){
+					switch($model['status']){
+					    case \common\models\User::STATUS_DELETED : return 'Banned'; break;
+					    case \common\models\User::STATUS_ACTIVE : return 'Active'; break;
+					}
+				}
+			],
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

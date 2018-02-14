@@ -70,7 +70,8 @@ class ProductController extends Controller
     {
 		$model = $this->findModel($id);
 		
-		$dataProviderImg = (new ProductImageSearch(['product_id' => $id]))->search(Yii::$app->request->queryParams);
+		$searchModelImg = new ProductImageSearch(['product_id' => $id]);
+		$dataProviderImg = $searchModelImg->search(Yii::$app->request->queryParams);
 		
 		$form = new UploadForm();
 		if(Yii::$app->request->isPost)
@@ -91,6 +92,7 @@ class ProductController extends Controller
         return $this->render('view', [
             'model1img' => $model,
 			'dataProviderImg' => $dataProviderImg,
+			'searchModelImg' => $searchModelImg,
 			'uploadform' => $form,
         ]);
     }

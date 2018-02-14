@@ -12,14 +12,16 @@ use common\models\Product;
  */
 class ProductSearch extends Product
 {
+	public $created_normal;
+	public $updated_normal;
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['id', 'category_id', 'brand_id', 'quantity'], 'integer'],
-            [['title', 'description'], 'safe'],
+            [['id', 'category_id', 'brand_id', 'quantity', 'created_at', 'updated_at'], 'integer'],
+            [['title', 'description', 'created_normal', 'updated_normal'], 'safe'],
             [['price'], 'number'],
         ];
     }
@@ -42,12 +44,15 @@ class ProductSearch extends Product
      */
     public function search($params)
     {
-        $query = Product::find()->asArray();
+        $query = Product::find();
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
-            'query' => $query,
+            'query' => $query->asArray(),
+			'pagination' => [
+			    'pageSize' => 15,
+			]
         ]);
 
         $this->load($params);
@@ -68,6 +73,8 @@ class ProductSearch extends Product
         ]);
 
         $query->andFilterWhere(['like', 'title', $this->title])
+		    ->andFilterWhere(['like', 'created_at', strtotime($this->created_normal)])
+			->andFilterWhere(['like', 'updated_at', strtotime($this->updated_normal)])
             ->andFilterWhere(['like', 'description', $this->description]);
 
         return $dataProvider;

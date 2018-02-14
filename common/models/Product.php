@@ -3,6 +3,9 @@
 namespace common\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yz\shoppingcart\CartPositionInterface;
+use yz\shoppingcart\CartPositionTrait;
 
 /**
  * This is the model class for table "product".
@@ -20,8 +23,18 @@ use Yii;
  * @property Category $category
  * @property ProductImage[] $productImages
  */
-class Product extends \yii\db\ActiveRecord
+class Product extends \yii\db\ActiveRecord implements CartPositionInterface
 {
+	use CartPositionTrait;
+	
+	
+	public function behaviors()
+    {
+        return [
+            TimestampBehavior::className(),
+        ];
+    }
+
     /**
      * @inheritdoc
      */
@@ -57,9 +70,26 @@ class Product extends \yii\db\ActiveRecord
             'brand_id' => 'Brand ID',
             'title' => 'Title',
             'description' => 'Description',
-            'price' => 'Price',
+            'price' => 'Price ($)',
             'quantity' => 'Quantity',
+			'created_at' => 'Created At',
+            'updated_at' => 'Updated At',
         ];
+    }
+	
+	//shopping cart interface functions
+	public function getPrice()
+    {
+		if(Yii::$app->user->isGuest){
+		    return $this->price;
+		}else{
+			return $this->price*0.8;
+		}
+	}
+	
+	public function getId()
+    {
+        return $this->id;
     }
 
     /**

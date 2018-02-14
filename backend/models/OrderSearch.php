@@ -12,14 +12,16 @@ use common\models\Order;
  */
 class OrderSearch extends Order
 {
+	public $created_normal;
+	public $updated_normal;
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['id'], 'integer'],
-            [['created_at', 'updated_at', 'customer_type', 'surname', 'name', 'country', 'region', 'city', 'address', 'zip_code', 'phone', 'email', 'notes', 'status'], 'safe'],
+            [['id',  'created_at', 'updated_at', 'status'], 'integer'],
+            [['created_normal', 'updated_normal', 'customer_type', 'surname', 'name', 'country', 'region', 'city', 'address', 'zip_code', 'phone', 'email', 'notes'], 'safe'],
         ];
     }
 
@@ -41,12 +43,15 @@ class OrderSearch extends Order
      */
     public function search($params)
     {
-        $query = Order::find()->asArray();
+        $query = Order::find();
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
-            'query' => $query,
+            'query' => $query->asArray(),
+			'pagination' => [
+			    'pageSize' => 15,
+			]
         ]);
 
         $this->load($params);
@@ -60,8 +65,6 @@ class OrderSearch extends Order
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
         ]);
 
         $query->andFilterWhere(['like', 'customer_type', $this->customer_type])
@@ -75,6 +78,8 @@ class OrderSearch extends Order
             ->andFilterWhere(['like', 'phone', $this->phone])
             ->andFilterWhere(['like', 'email', $this->email])
             ->andFilterWhere(['like', 'notes', $this->notes])
+			->andFilterWhere(['like', 'created_at', strtotime($this->created_normal)])
+			->andFilterWhere(['like', 'updated_at', strtotime($this->updated_normal)])
             ->andFilterWhere(['like', 'status', $this->status]);
 
         return $dataProvider;

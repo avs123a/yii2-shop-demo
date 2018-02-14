@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 use yii\widgets\ActiveForm;
+use kartik\file\FileInput;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Brand */
@@ -32,18 +33,27 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'title',
             'descrition',
+			[
+			    'format' => ['date', 'dd.MM.Y'],
+                'attribute' => 'created_at',
+			],
+			[
+			    'format' => ['date', 'dd.MM.Y'],
+                'attribute' => 'updated_at',
+			]
         ],
     ]) ?>
 	
 	<?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]) ?>
 	
-	<?= $form->field($upload_form, 'files')->fileInput(['multiple' => false]) ?>
-	
-	<?=Html::submitButton('Upload/Change Image', ['class' => 'btn btn-info']) ?>
+	<?= $form->field($upload_form, 'files')->widget(FileInput::classname(), [
+    'options' => ['multiple' => false],
+    'pluginOptions' => ['previewFileType' => 'jpg']
+    ])->label('Brand image')  ?>
 	
 	<?php ActiveForm::end(); ?>
 	
 	
-	<?=Html::img($model->getLogoUrl()) ?>
+	<?=Html::img($model->getLogoUrl(), ['width' => 300, 'height' => 100]) ?>
 
 </div>

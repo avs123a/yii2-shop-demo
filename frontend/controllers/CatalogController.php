@@ -15,7 +15,7 @@ class CatalogController extends Controller
 {
 	public function actionList()
 	{
-	    $prodQuery = Product::find()->where(['not',['quantity'=>'0']]);
+	    $prodQuery = Product::find()->where(['not',['quantity'=>0]]);
 		
 		//$selected_category = 'Electronics';
 		$selected_category = null;
@@ -26,7 +26,7 @@ class CatalogController extends Controller
 		}
 		
 		//menu
-		$categories = Category::find()->AsArray()->all();
+		$categories = Category::find()->all();
 		
 		if($categ = Yii::$app->request->get('choosed_category')){
 		    $category = Category::findOne(['title' => $categ]);

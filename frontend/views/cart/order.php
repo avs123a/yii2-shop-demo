@@ -6,9 +6,9 @@ use yii\widgets\ActiveForm;
 $this->title = 'Order';
 
 if(Yii::$app->user->isGuest){
-	$cust_type = 'Guest';
+	$cust_type = \common\models\Order::GUEST;
 }else{
-	$cust_type ='User';
+	$cust_type = \common\models\Order::USER;
 }
 
 ?>
@@ -22,21 +22,19 @@ if(Yii::$app->user->isGuest){
 		<div class="col-xs-2"><strong>Quantity</strong></div>
 		<div class="col-xs-2"><strong>Item Summary</strong></div>
 	</div>
-	<?php foreach($cart as $key => $value): ?>
-	    <?php if($value['id_item_cart']!=null): ?>
+	<?php foreach($products as $product): ?>
 	    <div class="row" style="height:20px !important">
-		    <div class="col-xs-3"><?=$value['title'] ?></div>
-			<div class="col-xs-3">$<?=$value['price'] ?></div>
-			<div class="col-xs-2"><?=$value['color'] ?></div>
-			<div class="col-xs-2"><?=$value['quantity'] ?></div>
-			<div class="col-xs-2">$<?=$value['price']*$value['quantity'] ?></div>
+		    <div class="col-xs-3"><?=$product->title ?></div>
+			<div class="col-xs-3">$<?=$product->getPrice() ?></div>
+			<div class="col-xs-2"><?=\Yii::$app->session->get('item_'.$product->getId()) ?></div>
+			<div class="col-xs-2"><?=$product->getQuantity() ?></div>
+			<div class="col-xs-2">$<?=$product->getPrice()*$product->getQuantity() ?></div>
 		</div>
-		<?php endif; ?>
 	<?php endforeach; ?>
+	<strong>Total: $<?=$total ?></strong>
 
     <?php $form = ActiveForm::begin() ?>
 	 <?= $form->field($model, 'customer_type')->hiddenInput(['value' => $cust_type])->label(false) ?>
-	 <?= $form->field($model, 'created_at')->hiddenInput(['value' => date('y.m.d')])->label(false) ?>
 	<div class="row">
 	    <h4>Personal info:</h4>
 	    <div class="col-xs-5">

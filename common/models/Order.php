@@ -3,13 +3,13 @@
 namespace common\models;
 
 use Yii;
-
+use yii\behaviors\TimestampBehavior;
 /**
  * This is the model class for table "order".
  *
  * @property integer $id
- * @property string $created_at
- * @property string $updated_at
+ * @property integer $created_at
+ * @property integer $updated_at
  * @property string $customer_type
  * @property string $surname
  * @property string $name
@@ -27,6 +27,24 @@ use Yii;
  */
 class Order extends \yii\db\ActiveRecord
 {
+	//order status
+	const STATUS_NEW = 0;
+	const STATUS_PAID = 1;
+	const STATUS_SHIPPING = 2;
+	const STATUS_DONE = 3;
+	const STATUS_CANCELLED = 5;
+	
+	//customer type
+	const GUEST = 0;
+	const USER = 1;
+	
+	public function behaviors()
+    {
+        return [
+            TimestampBehavior::className(),
+        ];
+    }
+
     /**
      * @inheritdoc
      */
@@ -41,9 +59,11 @@ class Order extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['created_at', 'updated_at'], 'safe'],
+            ['status', 'default', 'value' => self::STATUS_NEW],
+			['status', 'in', 'range' => [self::STATUS_NEW, self::STATUS_PAID, self::STATUS_SHIPPING, self::STATUS_DONE, self::STATUS_CANCELLED]],
             [['address', 'notes'], 'string'],
-            [['customer_type'], 'string', 'max' => 6],
+            ['customer_type', 'default', 'value' => self::GUEST],
+			['customer_type', 'in', 'range' => [self::GUEST, self::USER]],
             [['surname', 'name', 'country', 'region', 'city', 'zip_code', 'phone', 'email', 'status'], 'string', 'max' => 255],
         ];
     }
@@ -55,8 +75,8 @@ class Order extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'created_at' => 'Created At(yyyy-mm-dd)',
-            'updated_at' => 'Updated At(yyyy-mm-dd)',
+            'created_at' => 'Created At',
+            'updated_at' => 'Updated At',
             'customer_type' => 'Customer Type',
             'surname' => 'Surname',
             'name' => 'Name',

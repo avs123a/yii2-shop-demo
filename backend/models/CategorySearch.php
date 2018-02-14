@@ -12,14 +12,16 @@ use common\models\Category;
  */
 class CategorySearch extends Category
 {
+	public $created_normal;
+	public $updated_normal;
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['id', 'parent_id'], 'integer'],
-            [['title', 'descrition'], 'safe'],
+            [['id', 'parent_id', 'created_at', 'updated_at'], 'integer'],
+            [['title', 'descrition', 'created_normal', 'updated_normal'], 'safe'],
         ];
     }
 
@@ -41,12 +43,15 @@ class CategorySearch extends Category
      */
     public function search($params)
     {
-        $query = Category::find()->asArray();
+        $query = Category::find();
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
-            'query' => $query,
+            'query' => $query->asArray(),
+			'pagination' => [
+			    'pageSize' => 15,
+			]
         ]);
 
         $this->load($params);
@@ -64,6 +69,8 @@ class CategorySearch extends Category
         ]);
 
         $query->andFilterWhere(['like', 'title', $this->title])
+		    ->andFilterWhere(['like', 'created_at', strtotime($this->created_normal)])
+			->andFilterWhere(['like', 'updated_at', strtotime($this->updated_normal)])
             ->andFilterWhere(['like', 'descrition', $this->descrition]);
 
         return $dataProvider;
