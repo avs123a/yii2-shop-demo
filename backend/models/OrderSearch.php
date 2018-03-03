@@ -78,9 +78,12 @@ class OrderSearch extends Order
             ->andFilterWhere(['like', 'phone', $this->phone])
             ->andFilterWhere(['like', 'email', $this->email])
             ->andFilterWhere(['like', 'notes', $this->notes])
-			->andFilterWhere(['like', 'created_at', strtotime($this->created_normal)])
-			->andFilterWhere(['like', 'updated_at', strtotime($this->updated_normal)])
             ->andFilterWhere(['like', 'status', $this->status]);
+	    
+	    if($this->created_normal)
+	        $query->andFilterWhere(['between', 'created_at', strtotime($this->created_normal), strtotime($this->created_normal)+86400]);
+	if($this->updated_normal)
+		$query->andFilterWhere(['between', 'updated_at', strtotime($this->updated_normal), strtotime($this->updated_normal)+86400]);
 
         return $dataProvider;
     }
