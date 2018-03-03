@@ -73,9 +73,13 @@ class UserSearch extends User
             ->andFilterWhere(['like', 'auth_key', $this->auth_key])
             ->andFilterWhere(['like', 'password_hash', $this->password_hash])
             ->andFilterWhere(['like', 'password_reset_token', $this->password_reset_token])
-            ->andFilterWhere(['like', 'created_at', strtotime($this->created_normal)])
-			->andFilterWhere(['like', 'updated_at', strtotime($this->updated_normal)])
-			->andFilterWhere(['like', 'email', $this->email]);
+	    ->andFilterWhere(['like', 'email', $this->email]);
+	    
+	    
+	if($this->created_normal)
+	        $query->andFilterWhere(['between', 'created_at', strtotime($this->created_normal), strtotime($this->created_normal)+86400]);
+	if($this->updated_normal)
+		$query->andFilterWhere(['between', 'updated_at', strtotime($this->updated_normal), strtotime($this->updated_normal)+86400]);
 
         return $dataProvider;
     }
