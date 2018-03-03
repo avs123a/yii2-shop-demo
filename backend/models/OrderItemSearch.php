@@ -71,9 +71,12 @@ class OrderItemSearch extends OrderItem
             'quantity' => $this->quantity,
         ]);
 
-        $query->andFilterWhere(['like', 'color', $this->color])
-		    ->andFilterWhere(['like', 'created_at', strtotime($this->created_normal)])
-			->andFilterWhere(['like', 'updated_at', strtotime($this->updated_normal)]);
+        $query->andFilterWhere(['like', 'color', $this->color]);
+	    
+	if($this->created_normal)
+	        $query->andFilterWhere(['between', 'created_at', strtotime($this->created_normal), strtotime($this->created_normal)+86400]);
+	if($this->updated_normal)
+		$query->andFilterWhere(['between', 'updated_at', strtotime($this->updated_normal), strtotime($this->updated_normal)+86400]);
 
         return $dataProvider;
     }
