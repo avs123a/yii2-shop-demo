@@ -69,9 +69,12 @@ class CategorySearch extends Category
         ]);
 
         $query->andFilterWhere(['like', 'title', $this->title])
-		    ->andFilterWhere(['like', 'created_at', strtotime($this->created_normal)])
-			->andFilterWhere(['like', 'updated_at', strtotime($this->updated_normal)])
             ->andFilterWhere(['like', 'descrition', $this->descrition]);
+	    
+	if($this->created_normal)
+	        $query->andFilterWhere(['between', 'created_at', strtotime($this->created_normal), strtotime($this->created_normal)+86400]);
+	if($this->updated_normal)
+		$query->andFilterWhere(['between', 'updated_at', strtotime($this->updated_normal), strtotime($this->updated_normal)+86400]);
 
         return $dataProvider;
     }
